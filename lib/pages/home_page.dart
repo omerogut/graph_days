@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:graph_days/components/expense_sumary.dart';
 import 'package:graph_days/components/expense_tile.dart';
 import 'package:graph_days/data/expense_data.dart';
 import 'package:graph_days/models/expense_item.dart';
@@ -14,7 +15,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   //text controllers
   final newExpenseNameController = TextEditingController();
-  final newExpenseAmountController = TextEditingController();
+  final newExpenseDollarController = TextEditingController();
+  final newExpenseCentsController = TextEditingController();
 
   void addNewExpense() {
     showDialog(
@@ -28,23 +30,47 @@ class _HomePageState extends State<HomePage> {
                 //expense name
                 TextField(
                   controller: newExpenseNameController,
+                  decoration: const InputDecoration(
+                    hintText: "Expense name",
+                  ),
                 ),
                 //expense amount
-                TextField(
-                  controller: newExpenseAmountController,
+                Row(children: [
+                  //dollars
+                  Expanded(
+                    child: TextField(
+                      controller: newExpenseDollarController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        hintText: "Dollars",
+                      ),
+                    ),
+                  ),
+
+                  //cents
+                  Expanded(
+                    child: TextField(
+                      controller: newExpenseCentsController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        hintText: "Cents",
+                      ),
+                    ),
+                  ),
+                ],
                 ),
               ],
             ),
             actions: [
               //save buttons
               MaterialButton(
-                onPressed: save,
-                child: Text('Save'),
+                onPressed: cancel,
+                child: Text('Cancel'),
               ),
               //cancel button
               MaterialButton(
-                onPressed: cancel,
-                child: Text('Cancel'),
+                onPressed: save,
+                child: Text('Save'),
               )
             ],
           ),
@@ -52,9 +78,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   void save() {
+    //putting dolars and cents in the amount
+    String amount= '${newExpenseDollarController.text}.${newExpenseCentsController.text}';
+
+
     //create expense item
-    ExpenseItem newExpense = ExpenseItem(name: newExpenseNameController.text,
-      amount: newExpenseAmountController.text,
+    ExpenseItem newExpense = ExpenseItem(
+      name: newExpenseNameController.text,
+      amount: amount,
       dateTime: DateTime.now(),
     );
     //add the new expense
@@ -71,7 +102,8 @@ class _HomePageState extends State<HomePage> {
 //clear controllers
   void clear() {
     newExpenseNameController.clear();
-    newExpenseAmountController.clear();
+    newExpenseDollarController.clear();
+    newExpenseCentsController.clear();
   }
 
 
@@ -83,9 +115,15 @@ class _HomePageState extends State<HomePage> {
             backgroundColor: Colors.blueGrey,
             floatingActionButton: FloatingActionButton(
               onPressed: addNewExpense,
-              child: Icon(Icons.add),
+              backgroundColor: Colors.black,
+              child: const Icon(Icons.add),
             ),
             body: ListView(children:[
+              //weekly sumary
+              ExpenseSumary(startOfWeek: value.startOfWeekDate()),
+
+              const SizedBox(height: 20,),
+
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
