@@ -18,6 +18,13 @@ class _HomePageState extends State<HomePage> {
   final newExpenseDollarController = TextEditingController();
   final newExpenseCentsController = TextEditingController();
 
+  void initState(){
+    //TODO : imğlement initState
+    super.initState();
+    //prepare data on startup
+    Provider.of<ExpensesData>(context, listen: false).prepareData();
+  }
+
   void addNewExpense() {
     showDialog(
       context: context,
@@ -77,6 +84,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void deleteExpense(ExpenseItem expense){
+    Provider.of<ExpensesData>(context, listen: false).deleteExpense(expense);
+  }
+
   void save() {
     //putting dolars and cents in the amount
     String amount= '${newExpenseDollarController.text}.${newExpenseCentsController.text}';
@@ -132,6 +143,7 @@ class _HomePageState extends State<HomePage> {
                   name: value.getAllExpenseList()[index].name,
                   amount: value.getAllExpenseList()[index].amount,
                   dateTime: value.getAllExpenseList()[index].dateTime,
+                  deleteTapped: (p0)=>deleteExpense(value.getAllExpenseList()[index]),
               ),
               ),
       ]),

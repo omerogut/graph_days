@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:graph_days/data/hive_database.dart';
 import 'package:graph_days/datetime/date_time_helper.dart';
 import 'package:graph_days/models/expense_item.dart';
 
@@ -10,15 +11,29 @@ List<ExpenseItem> overallExpenseList=[];
 List<ExpenseItem> getAllExpenseList(){
   return overallExpenseList;
 }
+//prepare data to display
+
+  final db= HiveDatabase();
+  void prepareData(){
+  // if there exists data get it
+    if(db.readData().isNotEmpty){
+      overallExpenseList= db.readData();
+    }
+  }
+
 //add new expense
 void addNewExpense(ExpenseItem newExpense){
   overallExpenseList.add(newExpense);
   notifyListeners();
+  db.saveData(overallExpenseList);
+
 }
 //delete expense
 void deleteExpense(ExpenseItem expense){
   overallExpenseList.remove(expense);
   notifyListeners();
+  db.saveData(overallExpenseList);
+
 }
 //get weekday
 String getDayName(DateTime dateTime){
